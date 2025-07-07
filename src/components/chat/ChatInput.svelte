@@ -46,7 +46,10 @@
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      sendMessage();
+      // 어시스턴트 로딩 중에는 전송 방지
+      if (!session?.isLoading) {
+        sendMessage();
+      }
     }
   }
 </script>
@@ -60,7 +63,6 @@
         placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)"
         class="message-input"
         rows="1"
-        disabled={session?.isLoading}
       ></textarea>
       
       <button 
