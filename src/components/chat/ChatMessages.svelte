@@ -27,28 +27,6 @@
     {:else}
       {#each session.messages as message (message.id)}
         <div class="message" class:user={message.role === 'user'} class:assistant={message.role === 'assistant'}>
-          <div class="message-avatar">
-            {#if message.role === 'user'}
-              <div class="avatar user-avatar">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-            {:else}
-              <div class="avatar assistant-avatar">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 8V4H8"/>
-                  <rect width="16" height="12" x="4" y="8" rx="2"/>
-                  <path d="M2 14h2"/>
-                  <path d="M20 14h2"/>
-                  <path d="M15 13v2"/>
-                  <path d="M9 13v2"/>
-                </svg>
-              </div>
-            {/if}
-          </div>
-          
           <div class="message-content">
             <div class="message-header">
               <span class="message-role">
@@ -67,18 +45,6 @@
     
     {#if session.isLoading}
       <div class="message assistant">
-        <div class="message-avatar">
-          <div class="avatar assistant-avatar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 8V4H8"/>
-              <rect width="16" height="12" x="4" y="8" rx="2"/>
-              <path d="M2 14h2"/>
-              <path d="M20 14h2"/>
-              <path d="M15 13v2"/>
-              <path d="M9 13v2"/>
-            </svg>
-          </div>
-        </div>
         <div class="message-content">
           <div class="message-header">
             <span class="message-role">Assistant</span>
@@ -132,40 +98,36 @@
   }
 
   .message {
-    display: flex;
-    gap: var(--space-3);
     margin-bottom: var(--space-6);
   }
 
-  .message-avatar {
-    flex-shrink: 0;
-  }
 
-  .avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  .user-avatar {
-    background: var(--vscode-accent);
-    color: white;
-  }
-
-  .assistant-avatar {
-    background: var(--vscode-bg-tertiary);
-    color: var(--vscode-text-primary);
+  .message-content {
+    width: 100%;
+    padding: var(--space-4);
+    border-radius: 12px;
+    background: var(--vscode-bg-secondary);
     border: 1px solid var(--vscode-border);
   }
 
-  .message-content {
-    flex: 1;
-    min-width: 0;
+  .message.user .message-content {
+    background: var(--vscode-accent);
+    color: white;
+    border-color: var(--vscode-accent);
+  }
+
+  .message.user .message-header .message-role,
+  .message.user .message-header .message-time {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .message.user .message-text {
+    color: white;
+  }
+
+  .message.assistant .message-content {
+    background: var(--vscode-bg-secondary);
+    border-color: var(--vscode-border);
   }
 
   .message-header {
