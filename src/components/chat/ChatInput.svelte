@@ -60,7 +60,6 @@
         placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)"
         class="message-input"
         rows="1"
-        disabled={session?.isLoading}
       ></textarea>
       
       <button 
@@ -120,11 +119,6 @@
 
   .message-input::placeholder {
     color: var(--vscode-text-muted);
-  }
-
-  .message-input:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
   }
 
   .send-button {
