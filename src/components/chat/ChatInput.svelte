@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { tick } from 'svelte';
   import { sessionStore } from '../../stores/sessions';
   import type { Session } from '../../stores/sessions';
   
@@ -20,10 +19,7 @@
     
     const userMessage = messageInput.trim();
     const sessionId = session.id;
-    
-    // Clear input and wait for DOM update to prevent visual glitches
     messageInput = '';
-    await tick();
     
     // Add user message
     sessionStore.addMessage(sessionId, {
