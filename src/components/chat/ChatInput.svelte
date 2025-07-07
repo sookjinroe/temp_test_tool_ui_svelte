@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { tick } from 'svelte';
   import { sessionStore } from '../../stores/sessions';
   import type { Session } from '../../stores/sessions';
   
@@ -8,7 +7,6 @@
   
   let messageInput = '';
   let currentSessionId = session.id;
-  let textareaElement: HTMLTextAreaElement;
   
   // 세션이 변경되면 입력창 초기화
   $: if (session.id !== currentSessionId) {
@@ -16,20 +14,12 @@
     currentSessionId = session.id;
   }
   
-  async function sendMessage(messageContent: string) {
-    if (!messageContent.trim() || !session || session.isLoading) return;
+  async function sendMessage() {
+    if (!messageInput.trim() || !session || session.isLoading) return;
     
-    const userMessage = messageContent.trim();
+    const userMessage = messageInput.trim();
     const sessionId = session.id;
-    
-    // Clear input immediately
     messageInput = '';
-    
-    // Wait for DOM update and refocus
-    await tick();
-    if (textareaElement) {
-      textareaElement.focus();
-    }
     
     // Add user message
     sessionStore.addMessage(sessionId, {
@@ -53,25 +43,10 @@
     }, 1000 + Math.random() * 2000);
   }
   
-  async function handleKeydown(event: KeyboardEvent) {
+  function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      
-      // Check loading state before sending
-      if (session?.isLoading) return;
-      
-      // Use the textarea's current value directly to avoid timing issues
-      const currentValue = textareaElement.value;
-      
-      // Clear the textarea immediately
-      textareaElement.value = '';
-      messageInput = '';
-      
-      // Wait for DOM update
-      await tick();
-      
-      // Send the message with the captured value
-      await sendMessage(currentValue);
+      sendMessage();
     }
   }
 </script>
@@ -80,17 +55,17 @@
   <div class="input-container">
     <div class="message-input-wrapper">
       <textarea
-        bind:this={textareaElement}
         bind:value={messageInput}
         on:keydown={handleKeydown}
         placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)"
         class="message-input"
         rows="1"
+        disabled={session?.isLoading}
       ></textarea>
       
       <button 
         class="send-button"
-        on:click={() => sendMessage(messageInput)}
+        on:click={sendMessage}
         disabled={!messageInput.trim() || session?.isLoading}
         title="메시지 전송"
       >
@@ -145,6 +120,11 @@
 
   .message-input::placeholder {
     color: var(--vscode-text-muted);
+  }
+
+  .message-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   .send-button {
