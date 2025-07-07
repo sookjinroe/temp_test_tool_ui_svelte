@@ -17,7 +17,7 @@
   }
   
   async function sendMessage(messageContent: string) {
-    if (!messageContent.trim() || !session) return;
+    if (!messageContent.trim() || !session || session.isLoading) return;
     
     const userMessage = messageContent.trim();
     const sessionId = session.id;
@@ -53,13 +53,25 @@
     }, 1000 + Math.random() * 2000);
   }
   
-  function handleKeydown(event: KeyboardEvent) {
+  async function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
+      
       // Check loading state before sending
       if (session?.isLoading) return;
+      
       // Use the textarea's current value directly to avoid timing issues
-      sendMessage(textareaElement.value);
+      const currentValue = textareaElement.value;
+      
+      // Clear the textarea immediately
+      textareaElement.value = '';
+      messageInput = '';
+      
+      // Wait for DOM update
+      await tick();
+      
+      // Send the message with the captured value
+      await sendMessage(currentValue);
     }
   }
 </script>
