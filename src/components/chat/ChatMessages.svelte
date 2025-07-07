@@ -3,13 +3,6 @@
   
   export let session: Session;
   export let chatContainer: HTMLElement | undefined = undefined;
-  
-  function formatTime(date: Date) {
-    return date.toLocaleTimeString('ko-KR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  }
 </script>
 
 <div class="messages-container" bind:this={chatContainer}>
@@ -28,13 +21,6 @@
       {#each session.messages as message (message.id)}
         <div class="message" class:user={message.role === 'user'} class:assistant={message.role === 'assistant'}>
           <div class="message-content">
-            <div class="message-header">
-              <span class="message-role">
-                {message.role === 'user' ? '사용자' : 'Assistant'}
-              </span>
-              <span class="message-time">{formatTime(message.timestamp)}</span>
-            </div>
-            
             <div class="message-text">
               {message.content}
             </div>
@@ -46,9 +32,6 @@
     {#if session.isLoading}
       <div class="message assistant">
         <div class="message-content">
-          <div class="message-header">
-            <span class="message-role">Assistant</span>
-          </div>
           <div class="typing-indicator">
             <div class="typing-dots">
               <div class="dot"></div>
@@ -101,51 +84,25 @@
     margin-bottom: var(--space-6);
   }
 
-
   .message-content {
     width: 100%;
     padding: var(--space-4);
     border-radius: 12px;
+  }
+
+  /* 사용자 메시지: 현재 어시스턴트 버블 디자인 적용 */
+  .message.user .message-content {
     background: var(--vscode-bg-secondary);
+    color: var(--vscode-text-primary);
     border: 1px solid var(--vscode-border);
   }
 
-  .message.user .message-content {
-    background: var(--vscode-accent);
-    color: white;
-    border-color: var(--vscode-accent);
-  }
-
-  .message.user .message-header .message-role,
-  .message.user .message-header .message-time {
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  .message.user .message-text {
-    color: white;
-  }
-
+  /* 어시스턴트 메시지: 투명하게 만들어 배경에 직접 표시 */
   .message.assistant .message-content {
-    background: var(--vscode-bg-secondary);
-    border-color: var(--vscode-border);
-  }
-
-  .message-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-
-  .message-role {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--vscode-text-secondary);
-  }
-
-  .message-time {
-    font-size: 11px;
-    color: var(--vscode-text-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
   }
 
   .message-text {
