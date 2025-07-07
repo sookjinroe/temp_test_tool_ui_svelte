@@ -129,7 +129,6 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--vscode-text-primary);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
     max-width: calc(100% - 32px); /* 편집 버튼 공간 확보 */
   }
