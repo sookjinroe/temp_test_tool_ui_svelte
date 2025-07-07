@@ -6,6 +6,7 @@
   export let onMessageSent: () => void = () => {};
   
   let messageInput = '';
+  let textareaElement: HTMLTextAreaElement;
   let currentSessionId = session.id;
   
   // 세션이 변경되면 입력창 초기화
@@ -26,6 +27,11 @@
       role: 'user',
       content: userMessage
     });
+    
+    // 메시지 전송 후 입력창에 포커스 유지
+    if (textareaElement) {
+      textareaElement.focus();
+    }
     
     onMessageSent();
     
@@ -55,6 +61,7 @@
   <div class="input-container">
     <div class="message-input-wrapper">
       <textarea
+        bind:this={textareaElement}
         bind:value={messageInput}
         on:keydown={handleKeydown}
         placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)"
