@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import { sessionStore } from '../../stores/sessions';
   import type { Session } from '../../stores/sessions';
   
@@ -7,6 +8,7 @@
   
   let messageInput = '';
   let currentSessionId = session.id;
+  let textareaElement: HTMLTextAreaElement;
   
   // 세션이 변경되면 입력창 초기화
   $: if (session.id !== currentSessionId) {
@@ -14,12 +16,20 @@
     currentSessionId = session.id;
   }
   
-  async function sendMessage() {
-    if (!messageInput.trim() || !session || session.isLoading) return;
+  async function sendMessage(messageContent: string) {
+    if (!messageContent.trim() || !session) return;
     
-    const userMessage = messageInput.trim();
+    const userMessage = messageContent.trim();
     const sessionId = session.id;
+    
+    // Clear input immediately
     messageInput = '';
+    
+    // Wait for DOM update and refocus
+    await tick();
+    if (textareaElement) {
+      textareaElement.focus();
+    }
     
     // Add user message
     sessionStore.addMessage(sessionId, {
@@ -46,7 +56,8 @@
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      sendMessage();
+      // Use the textarea's current value directly to avoid timing issues
+      sendMessage(textareaElement.value);
     }
   }
 </script>
@@ -55,6 +66,7 @@
   <div class="input-container">
     <div class="message-input-wrapper">
       <textarea
+        bind:this={textareaElement}
         bind:value={messageInput}
         on:keydown={handleKeydown}
         placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)"
@@ -64,7 +76,7 @@
       
       <button 
         class="send-button"
-        on:click={sendMessage}
+        on:click={() => sendMessage(messageInput)}
         disabled={!messageInput.trim() || session?.isLoading}
         title="메시지 전송"
       >
