@@ -7,6 +7,7 @@
   
   let messageInput = '';
   let currentSessionId = session.id;
+  let textareaElement: HTMLTextAreaElement;
   
   // 세션이 변경되면 입력창 초기화
   $: if (session.id !== currentSessionId) {
@@ -28,6 +29,11 @@
     });
     
     onMessageSent();
+    
+    // 메시지 전송 후 입력창에 포커스 다시 설정
+    if (textareaElement) {
+      textareaElement.focus();
+    }
     
     // Simulate AI response (replace with actual API call)
     sessionStore.updateSessionLoadingState(sessionId, true);
@@ -55,6 +61,7 @@
   <div class="input-container">
     <div class="message-input-wrapper">
       <textarea
+        bind:this={textareaElement}
         bind:value={messageInput}
         on:keydown={handleKeydown}
         placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)"
