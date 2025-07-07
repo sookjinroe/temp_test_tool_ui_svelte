@@ -56,6 +56,8 @@
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
+      // Check loading state before sending
+      if (session?.isLoading) return;
       // Use the textarea's current value directly to avoid timing issues
       sendMessage(textareaElement.value);
     }
