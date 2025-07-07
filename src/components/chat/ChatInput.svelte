@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import { sessionStore } from '../../stores/sessions';
   import type { Session } from '../../stores/sessions';
   
@@ -20,6 +21,9 @@
     const userMessage = messageInput.trim();
     const sessionId = session.id;
     messageInput = '';
+    
+    // DOM 업데이트 완료까지 대기하여 플래시 현상 방지
+    await tick();
     
     // Add user message
     sessionStore.addMessage(sessionId, {
@@ -43,10 +47,17 @@
     }, 1000 + Math.random() * 2000);
   }
   
+  // 줄바꿈만 차단 (keydown)
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      // 어시스턴트 로딩 중에는 전송 방지
+      event.preventDefault(); // 줄바꿈만 차단
+    }
+  }
+  
+  // 실제 전송 처리 (keyup)
+  function handleKeyup(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      // IME 조합이 완료된 후에만 전송
       if (!session?.isLoading) {
         sendMessage();
       }
@@ -60,6 +71,7 @@
       <textarea
         bind:value={messageInput}
         on:keydown={handleKeydown}
+        on:keyup={handleKeyup}
         placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)"
         class="message-input"
         rows="1"
@@ -122,11 +134,6 @@
 
   .message-input::placeholder {
     color: var(--vscode-text-muted);
-  }
-
-  .message-input:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
   }
 
   .send-button {
